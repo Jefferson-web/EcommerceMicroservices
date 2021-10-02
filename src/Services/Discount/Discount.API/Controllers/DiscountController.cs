@@ -1,4 +1,5 @@
-﻿using Discount.API.Models;
+﻿using Discount.API.GrcpServices;
+using Discount.API.Models;
 using Discount.API.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -18,7 +19,7 @@ namespace Discount.API.Controllers
 
         public DiscountController(IDiscountRepository repository)
         {
-            this.repository = repository;
+            this.repository = repository ?? throw new ArgumentNullException(nameof(repository));
         }
 
         [HttpGet("{ProductName}", Name = "GetDiscount")]
