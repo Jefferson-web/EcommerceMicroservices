@@ -1,5 +1,4 @@
-﻿using Discount.API.GrcpServices;
-using Discount.API.Models;
+﻿using Discount.API.Models;
 using Discount.API.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
