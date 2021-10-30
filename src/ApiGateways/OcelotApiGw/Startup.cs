@@ -28,7 +28,7 @@ namespace OcelotApiGw
             {
                 o.AddPolicy("Policy", builder =>
                 {
-                    builder.AllowCredentials().AllowAnyHeader().AllowAnyMethod();
+                    builder.WithOrigins("http://localhost:4200");
                 });
             });
         }
@@ -40,8 +40,6 @@ namespace OcelotApiGw
             {
                 app.UseDeveloperExceptionPage();
             }
-
-            
 
             app.UseRouting();
 

@@ -49,7 +49,7 @@ namespace Basket.API
             {
                 options.AddPolicy("Policy", builder =>
                 {
-                    builder.AllowAnyMethod().AllowAnyOrigin().AllowAnyHeader();
+                    builder.WithOrigins("http://localhost:4200");
                 });
             });
             services.AddScoped<DiscountGrpcService>();
