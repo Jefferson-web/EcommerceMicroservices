@@ -24,6 +24,13 @@ namespace OcelotApiGw
                     {
                         x.WithDictionaryHandle();
                     });
+            services.AddCors(o =>
+            {
+                o.AddPolicy("Policy", builder =>
+                {
+                    builder.AllowCredentials().AllowAnyHeader().AllowAnyMethod();
+                });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -34,7 +41,11 @@ namespace OcelotApiGw
                 app.UseDeveloperExceptionPage();
             }
 
+            
+
             app.UseRouting();
+
+            app.UseCors("Policy");
 
             app.UseEndpoints(endpoints =>
             {
