@@ -48,39 +48,6 @@ services:
       - "/var/run/docker.sock:/var/run/docker.sock"
       - "portainer_data:/data"
 
-  catalog.api:
-    container_name: catalog.api
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - "Database:ConnectionString=mongodb://catalogdb:27017"
-    depends_on:
-      - catalogdb
-    ports:
-      - "8001:80"
-
-  basket.api:
-    container_name: basket.api
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - "CacheSettings:ConnectionSetting=basketdb:6379"
-      - "GrpcSettings:DiscountUrl=http://discount.grpc"
-    depends_on:
-      - basketdb
-    ports:
-      - "8002:80"
-
-
-  discount.api:
-    container_name: discount.api
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - "DatabaseSettings:ConnectionString=Server=discountdb;Port=5432;Database=DiscountDb;User Id=admin;Password=J9VJy379rwYpuG3m"
-    depends_on:
-      - discountdb
-    ports:
-      - "8003:80"
-
-
   orderdb:
      container_name: orderdb
      environment:
@@ -96,6 +63,26 @@ services:
          - "5672:5672"
          - "15672:15672"
 
+  catalog.api:
+    container_name: catalog.api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - "Database:ConnectionString=mongodb://catalogdb:27017"
+    depends_on:
+      - catalogdb
+    ports:
+      - "8001:80"
+
+  discount.api:
+    container_name: discount.api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - "DatabaseSettings:ConnectionString=Server=discountdb;Port=5432;Database=DiscountDb;User Id=admin;Password=J9VJy379rwYpuG3m"
+    depends_on:
+      - discountdb
+    ports:
+      - "8003:80"
+
   discount.grpc:
     container_name: discount.grpc
     environment:
@@ -106,13 +93,56 @@ services:
     ports:
       - "8004:80"
 
+  basket.api:
+    container_name: basket.api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - "CacheSettings:ConnectionSetting=basketdb:6379"
+      - "GrpcSettings:DiscountUrl=http://discount.grpc"
+      - "EventBusSettings:HostAddress=amqp://guest:guest@rabbitmq:5672"
+    depends_on:
+      - basketdb
+      - rabbitmq
+    ports:
+      - "8002:80"
+
 
   ordering.api:
     container_name: ordering.api
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionSettings:Server=orderdb;Database=OrderDb;User Id=sa;Password=SwN12345678
+      - ConnectionStrings:SQLConnection=Server=orderdb;Database=OrderDb;User Id=sa;Password=SwN12345678
+      - "EventBusSettings:HostAddress=amqp://guest:guest@rabbitmq:5672"
     ports:
       - "8005:80"
     depends_on:
       - orderdb
+      - rabbitmq
+
+
+  ocelotapigw:
+    container_name: ocelotapigw
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    ports:
+      - "8010:80"
+    depends_on:
+      - "catalog.api"
+      - "basket.api"
+      - "discount.api"
+      - "ordering.api"
+
+
+  shopping.aggregator:
+    container_name: shopping.aggregator
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - "ApiSettings:CatalogUrl=http://catalog.api"
+      - "ApiSettings:BasketUrl=http://basket.api"
+      - "ApiSettings:OrderingUrl=http://ordering.api"
+    ports:
+      - "8006:80"
+    depends_on:
+      - "catalog.api"
+      - "basket.api"
+      - "ordering.api"

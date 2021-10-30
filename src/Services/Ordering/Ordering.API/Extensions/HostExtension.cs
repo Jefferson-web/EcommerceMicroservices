@@ -37,14 +37,7 @@ namespace Ordering.API.Extensions
                 catch (SqlException ex)
                 {
                     logger.LogError(ex, "An error occurred while migrating the database using the database");
-                    if (retryForAvailability < 50)
-                    {
-                        retryForAvailability++;
-                        System.Threading.Thread.Sleep(2000);
-                        MigrateDatabase<TContext>(host, seeder, retryForAvailability);
-                    }
                 }
-
                 return host;
             }
         }
