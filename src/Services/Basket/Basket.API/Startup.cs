@@ -43,15 +43,6 @@ namespace Basket.API
             services.AddGrpcClient<DiscountProtoService.DiscountProtoServiceClient>( o => {
                 o.Address = new Uri(Configuration["GrpcSettings:DiscountUrl"]);
             });
-
-            // Cors Configuration
-            services.AddCors(options =>
-            {
-                options.AddPolicy("Policy", builder =>
-                {
-                    builder.WithOrigins("http://localhost:4200");
-                });
-            });
             services.AddScoped<DiscountGrpcService>();
             services.AddAutoMapper(typeof(Startup));
 
@@ -81,8 +72,6 @@ namespace Basket.API
             }
 
             app.UseRouting();
-
-            app.UseCors("Policy");
 
             app.UseAuthorization();
 

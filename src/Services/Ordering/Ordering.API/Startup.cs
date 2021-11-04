@@ -34,14 +34,6 @@ namespace Ordering.API
             services.AddApplicationServices();
             services.AddInfraestructureServices(Configuration);
 
-            services.AddCors(x =>
-            {
-                x.AddPolicy("Policy", builder =>
-                {
-                    builder.WithOrigins("http://localhost:4200");
-                });
-            });
-
             // MassTransit-RabbitMQ Configuration
             services.AddMassTransit(config => {
 
@@ -76,8 +68,6 @@ namespace Ordering.API
             }
 
             app.UseRouting();
-
-            app.UseCors("Policy");
 
             app.UseAuthorization();
 

@@ -38,7 +38,11 @@ namespace Ordering.Application.Features.Orders.Commands.CheckoutOrder
         }
 
         public async Task SendEmail(Order order) {
-            var email = new Email() { To = "jeffer_16_99@hotmail.com", Body = "Order was created.", Subject = "Order was created."};
+            var email = new Email() { 
+                To = order.EmailAddress, 
+                Body = "Tu orden fue creada satisfactoriamente.", 
+                Subject = "Orden creada"
+            };
             try
             {
                 await _emailService.SendEmail(email);

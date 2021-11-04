@@ -7,6 +7,8 @@ using SendGrid.Helpers.Mail;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -24,25 +26,23 @@ namespace Ordering.Infraestructure.Mail
         }
         public async Task<bool> SendEmail(Email email)
         {
-            var client = new SendGridClient(_emailSettings.ApiKey);
-            
-            var subject = email.Subject;
-            var to = new EmailAddress(email.To);
-            var emailBody = email.Body;
-
-            var from = new EmailAddress()
-            {
-                Email = _emailSettings.FromAddress,
-                Name = _emailSettings.FromName
-            };
-            var sendGridMessage =  MailHelper.CreateSingleEmail(from, to, subject, emailBody, emailBody);
-            var response = await client.SendEmailAsync(sendGridMessage);
-
-            _logger.LogInformation("Email send.");
-
-            if (response.StatusCode == System.Net.HttpStatusCode.Accepted)
-                return true;
-            _logger.LogError("Email sending failed.");
+            var message = new MailMessage();
+            message.From = new MailAddress("naty.ln21@gmail.com");
+            message.To.Add(new MailAddress(email.To));
+            message.Subject = email.Subject;
+            message.Body = email.Body;
+            message.BodyEncoding = System.Text.Encoding.UTF8;
+            message.IsBodyHtml = false;
+            message.Priority = MailPriority.High;
+            SmtpClient client = new SmtpClient();
+            client.Host = "smtp.gmail.com";
+            client.Port = 587;
+            client.EnableSsl = true;
+            client.DeliveryMethod = SmtpDeliveryMethod.Network;
+            client.UseDefaultCredentials = false;
+            client.Credentials = new NetworkCredential("naty.ln21@gmail.com", "ygxcfkidvanhybds");
+            await client.SendMailAsync(message);
+            client.Dispose();
             return false;
         }
     }
